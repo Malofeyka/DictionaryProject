@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 
 namespace DictionaryProjectC_
 {
-    class MainMenu
+    public class MainMenu
     {
         int choice = 0;
-        public int ShowMenu()
-        {            
-            
-            string[] options = { "1. Найти перевод слова", "2. Добавить слово в словарь", "3. Заменить слово", "4. Удалить слово", "5. Создать словарь", "6. Показать все словари\n(управлять стрелками)" };
+        public string[] options = { "1. Найти перевод слова", "2. Добавить слово в словарь", "3. Заменить слово", "4. Удалить слово", "5. Создать словарь", "6. Показать все словари\n(управлять стрелками)" };
+        public string hello = "Добро пожаловать в словарь!";
+        public int ShowMenu(string[] options, string hello)
+        {
             while (true)
             {
                 Console.SetCursorPosition(0, 0);
-                Console.WriteLine("Добро пожаловать в словарь!");
+                Console.WriteLine(hello);
                 for (int i = 0; i < options.Length; i++)
                 {
                     if (choice == i)
@@ -29,22 +29,22 @@ namespace DictionaryProjectC_
                     }
                 }
                 var key = Console.ReadKey();
-                
+
                 switch (key.Key)
                 {
                     case ConsoleKey.UpArrow:
-                        if(choice != 0)
+                        if (choice != 0)
                         {
                             choice--;
                         }
                         else
                         {
-                            choice = options.Length-1;
+                            choice = options.Length - 1;
                         }
                         break;
-                    
+
                     case ConsoleKey.DownArrow:
-                        if (choice != options.Length-1)
+                        if (choice != options.Length - 1)
                         {
                             choice++;
                         }
@@ -54,16 +54,23 @@ namespace DictionaryProjectC_
                         }
                         break;
                     case ConsoleKey.Enter:
-                        return choice+1;
+                        return choice + 1;
 
 
                 }
-                
+
             }
-            
+
         }
     }
 
+    public class SubMenuFindWord:MainMenu
+    {
+        public string[] options = { "1. Добавить русское слово", "2. Добавить английское слово", "3. Назад" };
+        public string hello = "Добавление нового слова";
+        
+    
+    }   
 
 
     internal class Program
@@ -71,10 +78,10 @@ namespace DictionaryProjectC_
         static void Main(string[] args)
         {
             MainMenu menu = new MainMenu();
-            int choice = menu.ShowMenu();
-            
+            int choice = menu.ShowMenu(menu.options, menu.hello);                    
             Console.ReadKey();
-
+            SubMenuFindWord menuFindWord = new SubMenuFindWord();
+            menuFindWord.ShowMenu(menuFindWord.options,menuFindWord.hello);
 
         }
     }
