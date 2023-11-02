@@ -74,12 +74,98 @@ namespace DictionaryProjectC_
         public string hello = "Добавление нового слова";
     }
 
+    public class AddWord
+    {
+        bool isIncorrect(string word)
+        {
+            bool Incorrect = false;
+            for(int i =0;i<word.Length;i++)
+            {
+                if (Char.IsDigit(word[i]))
+                {
+                    Incorrect = true;
+                }
+            }
+            if (Incorrect)
+            {
+                return true;
+            }
+            else return false;
+        }
+
+        public void appendword(List<string> words)
+        {
+            try
+            {
+                string word;
+                string translation;
+                while (true)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Введите слово: ");
+                    word = Console.ReadLine();
+                    if (isIncorrect(word))
+                    {
+                        Console.WriteLine("Введено некоректное слово");
+                        Thread.Sleep(1000);
+                        continue;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Слово успешно внесено в лист");
+                        Thread.Sleep(2000);
+                    }
+
+                    Console.WriteLine("Добавьте перевод: ");
+                    translation = Console.ReadLine();
+                    if (isIncorrect(translation))
+                    {
+                        Console.WriteLine("Введено некоректное слово");
+                        Thread.Sleep(1000);
+                        continue;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Перевод успешно внесён в лист");
+                        Thread.Sleep(2000);
+                        break;
+                    }
+                }
+                words.Add(word + "(" + translation + ")");
+                words.Sort();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        public void ReWrite(List<string> words, string path)
+        {
+            try
+            {
+                using(StreamWriter wr1 = new StreamWriter(path, false, Encoding.GetEncoding("windows-1251"))) 
+                {
+                    foreach (string word in words) {
+                        wr1.WriteLine(word);
+                    }
+                }
+                Console.WriteLine("Слово добавлено успешно!");
+                Thread.Sleep(2000);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+    }
+
     public class Dictionary : MainMenu
     {
         public string[] options = { "1. Создать англо-русский словарь", "2. Создать русско-английский словарь", "3. Назад" };
         public string hello = "Создание словаря";
         public string pathRtoE = "C:\\Users\\hoxy_\\Source\\Repos\\Malofeyka\\DictionaryProject\\dicts\\RusEng";
-        public string pathEtoR = "C:\\Users\\hoxy_\\Source\\Repos\\Malofeyka\\DictionaryProject\\dicts\\EngRus";
+        public string pathEtoR = "C:\\Users\\hoxy_\\Source\\Repos\\Malofeyka\\DictionaryProject\\dicts\\EngRus";                
         public void createFile(string path)
         {
             while (true)
@@ -130,11 +216,12 @@ namespace DictionaryProjectC_
                         }
                     }
                     Console.Clear();
-                    foreach (var e in words)
+                    words.Sort();
+                    /*foreach (var e in words)
                     {
                         Console.WriteLine(e);
-                    }
-
+                    }*/
+                    
                     return words;
 
                 }
@@ -158,7 +245,9 @@ namespace DictionaryProjectC_
             SubMenuAddWord menuAddWord = new SubMenuAddWord();
             Dictionary dictionary = new Dictionary();
             ReadAllThat read1 = new ReadAllThat();
+            AddWord add1 = new AddWord();
             int choice = 0;
+            List<string> words = new List<string>();
             while (true)
             {
                 if (choice == 0)
@@ -167,13 +256,17 @@ namespace DictionaryProjectC_
                 }
                 else if (choice == 1)
                 {
-                    read1.ReadInSet(dictionary.pathEtoR + "\\test1.txt");
                     choice = 0;
                     Console.ReadKey();
                 }
                 else if (choice == 2)
                 {
+                    
                     choice = menuAddWord.ShowMenu(menuAddWord.options, menuAddWord.hello);
+                    words = read1.ReadInSet(dictionary.pathEtoR + "\\test1.txt");
+                    add1.appendword(words);
+                    add1.ReWrite(words, dictionary.pathEtoR + "\\test1.txt");
+                    choice = 0;
 
                 }
                 else if (choice == 3)
