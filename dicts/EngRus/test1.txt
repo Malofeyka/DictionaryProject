@@ -1,5 +1,5 @@
 car(машина)
-ананас(pineapple)
+арбуз(watermalon)
 машина(car)
 мышь(mouse)
 нога(leg)

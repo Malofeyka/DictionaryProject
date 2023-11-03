@@ -135,6 +135,7 @@ namespace DictionaryProjectC_
                         break;
                     }
                 }
+
                 words.Add(word + "(" + translation + ")");
                 words.Sort();
                 words.Distinct();
@@ -242,6 +243,11 @@ namespace DictionaryProjectC_
         }
     }
 
+    public class ExchangeWord
+    {
+        public string[] options = { "1. Заменить русское слово", "2. Заменить английское слово", "3. Назад" };
+    }
+
     public class deleteWord
     {
         public string[] options = { "1. Удалить русское слово", "2. Удалить английское слово", "3. Назад" };
@@ -270,6 +276,7 @@ namespace DictionaryProjectC_
             ReadAllThat read1 = new ReadAllThat();
             AddWord add1 = new AddWord();
             deleteWord del1 = new deleteWord();
+            ExchangeWord exch1 = new ExchangeWord();
             int choice = 0;
             List<string> words = new List<string>();
                  
@@ -336,7 +343,35 @@ namespace DictionaryProjectC_
                 }
                 else if (choice == 3)
                 {
-                    Console.ReadKey();
+                    choice = menu.ShowMenu(exch1.options, "Замена слова");
+                    if (choice != 3 & choice == 1)
+                    {
+                        choice = menu.ShowMenu(RusDictsArray, "Выберите словарь: ");
+                        int choice2 = choice;
+                        words = read1.ReadInSet(dictionary.pathRtoE + "\\" + RusDictsList[choice - 1]);
+                        string[] wordsArray = words.ToArray();                        
+                        choice = menu.ShowMenu(wordsArray, "Выберите слово для замены: ");
+                        del1.delword(words, choice - 1);
+                        add1.appendword(words);                        
+                        add1.ReWrite(words, dictionary.pathRtoE + "\\" + RusDictsList[choice2 - 1]);
+                        choice = 0;
+                    }
+                    else if (choice != 3 & choice == 2)
+                    {
+                        choice = menu.ShowMenu(EngDictsArray, "Выберите словарь: ");
+                        int choice2 = choice;
+                        words = read1.ReadInSet(dictionary.pathEtoR + "\\" + EngDictsList[choice - 1]);
+                        string[] wordsArray = words.ToArray();
+                        choice = menu.ShowMenu(wordsArray, "Выберите слово для удаления: ");
+                        del1.delword(words, choice-1);
+                        add1.appendword(words);
+                        add1.ReWrite(words, dictionary.pathEtoR + "\\" + EngDictsList[choice2 - 1]);
+                        choice = 0;
+                    }
+                    else
+                    {
+                        choice = 0;
+                    }
                 }
                 else if (choice == 4)
                 {
@@ -360,7 +395,7 @@ namespace DictionaryProjectC_
                         words = read1.ReadInSet(dictionary.pathEtoR + "\\" + EngDictsList[choice - 1]);
                         string[] wordsArray = words.ToArray();                        
                         choice = menu.ShowMenu(wordsArray, "Выберите слово для удаления: ");
-                        del1.delword(words, choice );
+                        del1.delword(words, choice-1);
                         add1.ReWrite(words, dictionary.pathEtoR + "\\" + EngDictsList[choice2-1]);
                         choice = 0;
                     }
