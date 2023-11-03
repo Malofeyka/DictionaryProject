@@ -81,10 +81,14 @@ namespace DictionaryProjectC_
             bool Incorrect = false;
             for(int i =0;i<word.Length;i++)
             {
-                if (Char.IsDigit(word[i]))
+                if (!Char.IsLetter(word[i]) | word[i]==' ')
                 {
                     Incorrect = true;
                 }
+            }
+            if (word == "\n" | word == " " | word == "")
+            {
+                Incorrect = true;
             }
             if (Incorrect)
             {
@@ -248,6 +252,29 @@ namespace DictionaryProjectC_
             AddWord add1 = new AddWord();
             int choice = 0;
             List<string> words = new List<string>();
+
+            List<string> RusDictsList = new List<string>();
+            List<string> EngDictsList = new List<string>();
+            DirectoryInfo di = new DirectoryInfo(dictionary.pathRtoE);
+            foreach (var fi in di.GetFiles())
+            {
+                RusDictsList.Add(fi.Name);
+            }           
+            DirectoryInfo di1 = new DirectoryInfo(dictionary.pathEtoR);
+            foreach (var fi in di1.GetFiles())
+            {
+                EngDictsList.Add(fi.Name);
+            }
+            string[] RusDictsArray = new string[RusDictsList.Count];
+            string[] EngDictsArray = new string[EngDictsList.Count];
+            for (int i = 0; i < RusDictsList.Count; i++)
+            {
+                RusDictsArray[i] = RusDictsList[i];
+            }
+            for (int i = 0; i < EngDictsList.Count; i++)
+            {
+                EngDictsArray[i] = EngDictsList[i];
+            }
             while (true)
             {
                 if (choice == 0)
@@ -262,12 +289,24 @@ namespace DictionaryProjectC_
                 else if (choice == 2)
                 {
                     
-                    choice = menuAddWord.ShowMenu(menuAddWord.options, menuAddWord.hello);
-                    words = read1.ReadInSet(dictionary.pathEtoR + "\\test1.txt");
-                    add1.appendword(words);
-                    add1.ReWrite(words, dictionary.pathEtoR + "\\test1.txt");
-                    choice = 0;
-
+                    choice = menu.ShowMenu(menuAddWord.options, menuAddWord.hello);
+                    if (choice != 3 & choice == 1)
+                    {
+                        choice = menu.ShowMenu(RusDictsArray, "Выберите словарь");
+                        words = read1.ReadInSet(dictionary.pathRtoE+"\\" + RusDictsList[choice-1]);                        
+                        add1.appendword(words);
+                        add1.ReWrite(words, dictionary.pathRtoE + "\\"+ RusDictsList[choice - 1]);
+                        choice = 0;
+                    }
+                    else if (choice != 3 & choice == 2)
+                    {
+                        choice = menu.ShowMenu(EngDictsArray, "Выберите словарь: ");
+                        words = read1.ReadInSet(dictionary.pathEtoR + "\\" + EngDictsList[choice-1]);
+                        add1.appendword(words);
+                        add1.ReWrite(words, dictionary.pathEtoR + "\\" + EngDictsList[choice-1]);
+                        choice = 0;
+                    }
+                    choice = 0;                    
                 }
                 else if (choice == 3)
                 {
@@ -280,14 +319,21 @@ namespace DictionaryProjectC_
                 else if (choice == 5)
                 {
                     choice = dictionary.ShowMenu(dictionary.options, dictionary.hello);
-                    if (choice == 1)
+                    if (choice != 3)
                     {
-                        dictionary.createFile(dictionary.pathEtoR);
-                        choice = 0;
+                        if (choice == 1)
+                        {
+                            dictionary.createFile(dictionary.pathEtoR);
+                            choice = 0;
+                        }
+                        else if (choice == 2)
+                        {
+                            dictionary.createFile(dictionary.pathRtoE);
+                            choice = 0;
+                        }
                     }
-                    else if (choice == 2)
+                    else
                     {
-                        dictionary.createFile(dictionary.pathRtoE);
                         choice = 0;
                     }
 
@@ -295,17 +341,16 @@ namespace DictionaryProjectC_
                 else if (choice == 6)
                 {
                     Console.Clear();
-                    Console.WriteLine("Англо-русские словари");
-                    DirectoryInfo di = new DirectoryInfo(dictionary.pathEtoR);
-                    foreach (var fi in di.GetFiles())
+                    Console.WriteLine("Англо-русские словари");                    
+                    foreach (var fi in EngDictsArray)
                     {
-                        Console.WriteLine("\t- " + fi.Name);
+                        Console.WriteLine("\t- " + fi);
                     }
                     Console.WriteLine("Русско-английские словари");
-                    DirectoryInfo di1 = new DirectoryInfo(dictionary.pathRtoE);
-                    foreach (var fi in di1.GetFiles())
+                    
+                    foreach (var fi in RusDictsArray)
                     {
-                        Console.WriteLine("\t- " + fi.Name);
+                        Console.WriteLine("\t- " + fi);
                     }
                     Console.ReadKey();
                     choice = 0;
