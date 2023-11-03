@@ -137,6 +137,7 @@ namespace DictionaryProjectC_
                 }
                 words.Add(word + "(" + translation + ")");
                 words.Sort();
+                words.Distinct();
             }
             catch (Exception ex)
             {
@@ -154,7 +155,7 @@ namespace DictionaryProjectC_
                         wr1.WriteLine(word);
                     }
                 }
-                Console.WriteLine("Слово добавлено успешно!");
+                Console.WriteLine("Успешно!");
                 Thread.Sleep(2000);
             }
             catch(Exception ex)
@@ -241,6 +242,24 @@ namespace DictionaryProjectC_
         }
     }
 
+    public class deleteWord
+    {
+        public string[] options = { "1. Удалить русское слово", "2. Удалить английское слово", "3. Назад" };
+        public List<string> delword(List<string> words, int index)
+        {
+            try
+            {
+                words.RemoveAt(index);
+                return words;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return words;
+        }
+    }
+
     internal class Program
     {
         static void Main(string[] args)
@@ -250,9 +269,10 @@ namespace DictionaryProjectC_
             Dictionary dictionary = new Dictionary();
             ReadAllThat read1 = new ReadAllThat();
             AddWord add1 = new AddWord();
+            deleteWord del1 = new deleteWord();
             int choice = 0;
             List<string> words = new List<string>();
-
+                 
             List<string> RusDictsList = new List<string>();
             List<string> EngDictsList = new List<string>();
             DirectoryInfo di = new DirectoryInfo(dictionary.pathRtoE);
@@ -267,6 +287,7 @@ namespace DictionaryProjectC_
             }
             string[] RusDictsArray = new string[RusDictsList.Count];
             string[] EngDictsArray = new string[EngDictsList.Count];
+            string[] AllDicts = new string[RusDictsList.Count+EngDictsList.Count];
             for (int i = 0; i < RusDictsList.Count; i++)
             {
                 RusDictsArray[i] = RusDictsList[i];
@@ -275,6 +296,11 @@ namespace DictionaryProjectC_
             {
                 EngDictsArray[i] = EngDictsList[i];
             }
+            
+
+            RusDictsArray.CopyTo(AllDicts, 0);
+            EngDictsArray.CopyTo(AllDicts, RusDictsArray.Length);
+
             while (true)
             {
                 if (choice == 0)
@@ -314,7 +340,36 @@ namespace DictionaryProjectC_
                 }
                 else if (choice == 4)
                 {
-                    Console.ReadKey();
+                    choice = menu.ShowMenu(del1.options, menuAddWord.hello);
+                    if (choice != 3 & choice == 1)
+                    {
+                        choice = menu.ShowMenu(RusDictsArray, "Выберите словарь: ");
+                        int choice2 = choice;
+                        words = read1.ReadInSet(dictionary.pathRtoE + "\\" + RusDictsList[choice - 1]);
+                        string[] wordsArray = words.ToArray();
+                        Console.ReadKey();
+                        choice = menu.ShowMenu(wordsArray, "Выберите слово для удаления: ");
+                        words = del1.delword(words, choice - 1);
+                        add1.ReWrite(words, dictionary.pathRtoE + "\\" + RusDictsList[choice2-1]);
+                        choice = 0;
+                    }
+                    else if (choice != 3 & choice == 2)
+                    {
+                        choice = menu.ShowMenu(EngDictsArray, "Выберите словарь: ");
+                        int choice2 = choice;
+                        words = read1.ReadInSet(dictionary.pathEtoR + "\\" + EngDictsList[choice - 1]);
+                        string[] wordsArray = words.ToArray();                        
+                        choice = menu.ShowMenu(wordsArray, "Выберите слово для удаления: ");
+                        del1.delword(words, choice );
+                        add1.ReWrite(words, dictionary.pathEtoR + "\\" + EngDictsList[choice2-1]);
+                        choice = 0;
+                    }
+                    else
+                    {
+                        choice = 0;
+                    }
+
+                    
                 }
                 else if (choice == 5)
                 {
